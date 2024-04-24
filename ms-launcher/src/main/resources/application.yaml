@@ -1,0 +1,5 @@
+chatgpt:
+  api:
+    key: "sk-proj-lnGSDI4R0YDfsM8wOjyET3BlbkFJ3yThoiMExNNQIWGP2Byj"
+    endpoint: "https://api.openai.com/v1/chat/completions"
+    model: "gpt-3.5-turbo"
