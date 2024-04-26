@@ -1,34 +1,23 @@
 package br.com.elwgomes.http;
 
+import br.com.elwgomes.config.ConfigReader;
 import br.com.elwgomes.repositories.ChatGptClientRepository;
 import lombok.*;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
 
 @AllArgsConstructor
 @Getter
-public class ChatGptHttpClient implements ChatGptClientRepository {
+@Builder
+public class ChatGptHttpClient extends ConfigReader implements ChatGptClientRepository {
     private final String apiKey;
     private final String endpoint;
     private final String model;
 
-    public static ChatGptHttpClient fromConfig(InputStream configFile) {
-        Yaml yaml = new Yaml();
-        Map<String, Object> config = yaml.load(configFile);
-        Map<String, Object> chatgptConfig = (Map<String, Object>) config.get("chatgpt");
-        Map<String, Object> apiConfig = (Map<String, Object>) chatgptConfig.get("api");
-        String apiKey = (String) apiConfig.get("key");
-        String endpoint = (String) apiConfig.get("endpoint");
-        String model = (String) apiConfig.get("model");
-        return new ChatGptHttpClient(apiKey, endpoint, model);
-    }
-
     @Override
-    public String execute(String message) throws Exception {
+    public String execute(String topic, String message) throws Exception {
         try {
             URL obj = new URL(endpoint);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -36,7 +25,8 @@ public class ChatGptHttpClient implements ChatGptClientRepository {
             con.setRequestProperty("Authorization", "Bearer " + apiKey);
             con.setRequestProperty("Content-Type", "application/json");
 
-            String body = "{\"model\": \"" + model + "\", \"messages\": [{\"role\": \"user\", \"content\": \"" + message + "\"}]}";
+            String prompt = "Vou te perguntar algo e se não tiver a ver com " + topic + ", você não precisa responder, tudo bem? Apenas diga: 'Este assunto não me diz respeito.' Se o assunto tiver alguma relação com " + topic + ", você pode responder normalmente, ok? " + message;
+            String body = "{\"model\": \"" + model + "\", \"messages\": [{\"role\": \"user\", \"content\": \"" + prompt + "\"}]}";
             con.setDoOutput(true);
             OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
             writer.write(body);
@@ -50,15 +40,15 @@ public class ChatGptHttpClient implements ChatGptClientRepository {
                 response.append(inputLine);
             }
             in.close();
-            return "ChatGPT: " + extractContentFromResponse(response.toString());
+
+            // extrai a resposta da api
+            int startMarker = response.indexOf("content")+11;
+            int endMarker = response.indexOf("\"", startMarker);
+            String extractedResponse= response.substring(startMarker, endMarker);
+
+            return "ChatGPT: " + extractedResponse;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static String extractContentFromResponse(String response) {
-        int startMarker = response.indexOf("content")+11;
-        int endMarker = response.indexOf("\"", startMarker);
-        return response.substring(startMarker, endMarker);
     }
 }

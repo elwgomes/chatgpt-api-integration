@@ -1,5 +1,7 @@
 package br.com.elwgomes.repositories;
 
+import java.io.InputStream;
+
 public interface ChatGptClientRepository {
-    String execute(String message) throws Exception;
+    String execute(String topic, String message) throws Exception;
 }
