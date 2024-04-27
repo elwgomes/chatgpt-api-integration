@@ -46,6 +46,8 @@ public class ChatGptHttpClient extends ConfigReader implements ChatGptClientRepo
             int endMarker = response.indexOf("\"", startMarker);
             String extractedResponse= response.substring(startMarker, endMarker);
 
+            System.out.println(prompt);
+
             return "ChatGPT: " + extractedResponse;
         } catch (IOException e) {
             throw new RuntimeException(e);
