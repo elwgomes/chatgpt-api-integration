@@ -25,7 +25,12 @@ public class ChatGptHttpClient extends ConfigReader implements ChatGptClientRepo
             con.setRequestProperty("Authorization", "Bearer " + apiKey);
             con.setRequestProperty("Content-Type", "application/json");
 
-            String prompt = "Vou te perguntar algo e se não tiver a ver com " + topic + ", você não precisa responder, tudo bem? Apenas diga: 'Este assunto não me diz respeito.' Se o assunto tiver alguma relação com " + topic + ", você pode responder normalmente, ok? " + message;
+            String prompt = "Vou te perguntar algo e se não tiver a ver com " +
+                topic +
+                ", você não precisa responder, tudo bem? Apenas diga: 'Este assunto não me diz respeito.' Se o assunto tiver alguma relação com " +
+                topic +
+                ", você pode responder normalmente, ok? " +
+                message;
             String body = "{\"model\": \"" + model + "\", \"messages\": [{\"role\": \"user\", \"content\": \"" + prompt + "\"}]}";
             con.setDoOutput(true);
             OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
@@ -45,8 +50,6 @@ public class ChatGptHttpClient extends ConfigReader implements ChatGptClientRepo
             int startMarker = response.indexOf("content")+11;
             int endMarker = response.indexOf("\"", startMarker);
             String extractedResponse= response.substring(startMarker, endMarker);
-
-            System.out.println(prompt);
 
             return "ChatGPT: " + extractedResponse;
         } catch (IOException e) {

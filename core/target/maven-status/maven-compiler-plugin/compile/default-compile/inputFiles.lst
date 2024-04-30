@@ -1,0 +1,3 @@
+/home/skxlz/workspace/java/chatgpt-api-integration/core/src/main/java/br/com/elwgomes/ports/contract/GetChatCompletionCommand.java
+/home/skxlz/workspace/java/chatgpt-api-integration/core/src/main/java/br/com/elwgomes/ports/spi/GptPort.java
+/home/skxlz/workspace/java/chatgpt-api-integration/core/src/main/java/br/com/elwgomes/usecases/GetChatCompletionHandler.java
